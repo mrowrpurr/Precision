@@ -1,8 +1,14 @@
 #include "ActiveActor.h"
 
+#include "Hooks.h"
 #include "Offsets.h"
 #include "PrecisionHandler.h"
 #include "Utils.h"
+
+bool isEqual(float a, float b, float epsilon)
+{
+	return std::abs(a - b) < epsilon;
+}
 
 ActiveActor::ActiveActor(RE::ActorHandle a_actorHandle, RE::NiAVObject* a_root, RE::NiAVObject* a_clone, uint16_t a_currentCollisionGroup, CollisionLayer a_collisionLayer) :
 	actorHandle(a_actorHandle),
@@ -12,7 +18,7 @@ ActiveActor::ActiveActor(RE::ActorHandle a_actorHandle, RE::NiAVObject* a_root, 
 	collisionLayer(a_collisionLayer)
 {
 	if (auto actor = actorHandle.get()) {
-		actorScale = actor->GetScale();
+		actorScale = Utils::GetScale(actor.get());
 	}
 
 	FillCloneMap(a_clone, a_root);
@@ -68,9 +74,11 @@ bool ActiveActor::UpdateClone()
 		return false;
 	}
 
+	//Until i git gud we'll just have to remove and re-add the actor in order to correctly update the capsules.
 	// Early out if the actor's scale has changed
-	auto currentScale = actor->GetScale();
-	if (currentScale != actorScale) {
+	//auto currentScale = actor->GetScale();
+	if (!isEqual(actorScale,Utils::GetScale(actor.get()),0.2f)) {
+		actorScale = Utils::GetScale(actor.get());
 		return false;
 	}
 

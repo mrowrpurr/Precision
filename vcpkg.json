@@ -2,6 +2,7 @@
   "name": "precision",
   "version": "2",
   "dependencies": [
+    "directxtk",
     "fmt",
     "rapidcsv",
     "rsm-binary-io",

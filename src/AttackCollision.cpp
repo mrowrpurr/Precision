@@ -348,7 +348,7 @@ bool AttackCollision::Add(const CollisionDefinition& a_collisionDefinition)
 		RE::hkVector4 recoilVertexB{};
 		float recoilRadius = radius;
 
-		recoilVertexA.quad.m128_f32[0] = Settings::fRecoilCollisionLength * actor->GetScale() * havokWorldScale;
+		recoilVertexA.quad.m128_f32[0] = Settings::fRecoilCollisionLength * Utils::GetScale(actor) * havokWorldScale;
 
 		CreateCollision(world, actor, node, recoilNode, recoilVertexA, recoilVertexB, recoilRadius, CollisionLayer::kPrecisionRecoil);
 

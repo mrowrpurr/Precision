@@ -1345,7 +1345,7 @@ float PrecisionHandler::GetWeaponAttackLength(RE::ActorHandle a_actorHandle, RE:
 	float length = 0.f;
 	if (a_overrideLength) {
 		length = *a_overrideLength;
-		length *= actor->GetScale();  // apply actor scale
+		length *= Utils::GetScale(actor.get());  // apply actor scale
 	} else {
 		if (!TryGetCachedWeaponMeshReach(actor.get(), a_weapon, length)) {  // this applies actor scale already
 			length = GetWeaponMeshLength(a_weaponNode);
@@ -1389,7 +1389,7 @@ float PrecisionHandler::GetWeaponAttackRadius(RE::ActorHandle a_actorHandle, RE:
 	}
 
 	// apply actor scale
-	radius *= actor->GetScale();
+	radius *= Utils::GetScale(actor.get()) / 2.0f;
 
 	float mult = GetAttackRadiusMult(actor.get()) * a_radiusMult;
 
@@ -1423,7 +1423,7 @@ bool PrecisionHandler::GetNodeAttackDimensions(RE::ActorHandle a_actorHandle, RE
 		return false;
 	}
 
-	float actorScale = actor->GetScale();
+	float actorScale = Utils::GetScale(actor.get());
 
 	float length = 0.f;
 	float radius = 0.f;
@@ -1510,7 +1510,7 @@ bool PrecisionHandler::GetInventoryWeaponReach(RE::Actor* a_actor, RE::TESBoundO
 		if (auto& currentProcess = a_actor->GetActorRuntimeData().currentProcess) {
 			if (currentProcess->cachedValues) {
 				float radius = currentProcess->cachedValues->cachedRadius;
-				float scale = a_actor->GetScale();
+				float scale = Utils::GetScale(a_actor);
 				if (!a_object || a_object == g_unarmedWeapon) {
 					float lengthMult = GetAttackLengthMult(a_actor) * scale;
 					a_outReach = (Settings::fMinWeaponLength + Settings::fWeaponLengthUnarmedOffset + Settings::fAIWeaponReachOffset) * lengthMult + radius;
@@ -1576,7 +1576,7 @@ bool PrecisionHandler::TryGetCachedWeaponMeshReach(RE::Actor* a_actor, RE::TESOb
 
 		auto search = weaponMeshLengthMap.find(a_weapon);
 		if (search != weaponMeshLengthMap.end()) {
-			a_outReach = search->second * a_actor->GetScale();
+			a_outReach = search->second * Utils::GetScale(a_actor);
 
 			return true;
 		}
@@ -1592,7 +1592,7 @@ bool PrecisionHandler::TryGetCachedWeaponMeshReach(RE::Actor* a_actor, RE::TESOb
 			weaponMeshLengthMap.emplace(a_weapon, reach);
 		}
 
-		a_outReach = reach * a_actor->GetScale();
+		a_outReach = reach * Utils::GetScale(a_actor);
 
 		return true;
 	}
@@ -1608,7 +1608,7 @@ bool PrecisionHandler::TryGetCachedWeaponMeshReach(RE::Actor* a_actor, RE::TESOb
 					weaponMeshLengthMap.emplace(a_weapon, reach);
 				}
 
-				a_outReach = reach * a_actor->GetScale();
+				a_outReach = reach * Utils::GetScale(a_actor);
 				return true;
 			}
 		}

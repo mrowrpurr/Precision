@@ -44,7 +44,7 @@ namespace
 			util::report_and_fail("Failed to find standard logging directory"sv);
 		}
 
-		*path /= fmt::format("{}.log"sv, Plugin::NAME);
+		*path /= fmt::format("{}.log", Plugin::NAME);
 		auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
 #endif
 
@@ -70,7 +70,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
 	a_info->version = Plugin::VERSION.pack();
 
 	if (a_skse->IsEditor()) {
-		logger::critical("Loaded in editor, marking as incompatible"sv);
+		logger::critical("Loaded in editor, marking as incompatible");
 		return false;
 	}
 
@@ -103,10 +103,10 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 		Sleep(100);
 	}
 #endif
-	REL::Module::reset();  // Clib-NG bug workaround
+	//REL::Module::reset();  // Clib-NG bug workaround
 
 	InitializeLog();
-	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
+	logger::info("{} v{}", Plugin::NAME, Plugin::VERSION.string());
 
 	SKSE::Init(a_skse);
 	SKSE::AllocTrampoline(1 << 10);
@@ -125,12 +125,12 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 extern "C" DLLEXPORT void* SKSEAPI RequestPluginAPI(const PRECISION_API::InterfaceVersion a_interfaceVersion)
 {
 	// Workaround so the old version of Accuracy doesn't receive the API. Should've designed the API a bit differently. Too late now.
-	HMODULE hModule = nullptr;
+	REX::W32::HMODULE hModule = nullptr;
 	void* retAddr = _ReturnAddress();
-	GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCSTR)retAddr, &hModule);
+	GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCSTR)retAddr, (HMODULE*)&hModule);
 
 	if (hModule) {
-		SKSE::PluginVersionData* versionData = (SKSE::PluginVersionData*)SKSE::WinAPI::GetProcAddress(hModule, "SKSEPlugin_Version");
+		SKSE::PluginVersionData* versionData = (SKSE::PluginVersionData*)REX::W32::GetProcAddress(hModule, "SKSEPlugin_Version");
 		if (versionData && versionData->pluginName == "Accuracy"sv && versionData->pluginVersion < 0x20000) {
 			return nullptr;
 		}

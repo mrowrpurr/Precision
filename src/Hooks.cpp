@@ -41,7 +41,7 @@ namespace Hooks
 
 		PrecisionHandler::GetSingleton()->Update(*g_deltaTime);
 		DrawHandler::GetSingleton()->Update(*g_deltaTime);
-	}
+		}
 
 	void UpdateHooks::ApplyMovement(RE::Actor* a_this, float a_deltaTime)
 	{
@@ -2005,7 +2005,7 @@ namespace Hooks
 							if (auto skeleton = unk58->object) {
 								if (auto cell = actor->GetParentCell()) {
 									if (auto world = cell->GetbhkWorld()) {
-										float scale = actor->GetScale();
+										float scale = Utils::GetScale(actor.get());
 										auto clone = RE::NiPointer<RE::NiAVObject>(Utils::Clone<RE::NiAVObject>(skeleton, { scale, scale, scale }));
 										if (clone) {
 											// set user data so collision callbacks can identify the hit actor
@@ -2153,7 +2153,7 @@ namespace Hooks
 			if (a_actor) {
 				if (auto& currentProcess = a_actor->GetActorRuntimeData().currentProcess) {
 					if (currentProcess->cachedValues) {
-						float radius = currentProcess->cachedValues->cachedRadius / a_actor->GetScale();
+						float radius = currentProcess->cachedValues->cachedRadius / Utils::GetScale(a_actor);
 						float lengthMult = PrecisionHandler::GetAttackLengthMult(a_actor);
 						float reach = (Settings::fMinWeaponLength + Settings::fWeaponLengthUnarmedOffset + Settings::fAIWeaponReachOffset) * lengthMult + radius;
 						return std::fmin(reach, _GetUnarmedReach(a_actor));
