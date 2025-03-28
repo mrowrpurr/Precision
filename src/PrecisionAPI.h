@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Windows.h>
+
 /*
 * For modders: Copy this file into your own project if you wish to use this API
 */
@@ -374,7 +376,8 @@ namespace PRECISION_API
 	/// <returns>The pointer to the API singleton, or nullptr if request failed</returns>
 	[[nodiscard]] inline void* RequestPluginAPI(const InterfaceVersion a_interfaceVersion = InterfaceVersion::V4)
 	{
-		auto pluginHandle = REX::W32::GetModuleHandle("Precision.dll");
+		// auto pluginHandle = REX::W32::GetModuleHandle("Precision.dll");
+		auto pluginHandle = REX::W32::GetModuleHandle(L"Precision.dll");
 		_RequestPluginAPI requestAPIFunction = (_RequestPluginAPI)REX::W32::GetProcAddress(pluginHandle, "RequestPluginAPI");
 		if (requestAPIFunction) {
 			return requestAPIFunction(a_interfaceVersion);

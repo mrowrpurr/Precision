@@ -1,3 +1,4 @@
+
 #include "ActiveActor.h"
 
 #include "Hooks.h"
@@ -77,7 +78,7 @@ bool ActiveActor::UpdateClone()
 	//Until i git gud we'll just have to remove and re-add the actor in order to correctly update the capsules.
 	// Early out if the actor's scale has changed
 	//auto currentScale = actor->GetScale();
-	if (!isEqual(actorScale,Utils::GetScale(actor.get()),0.2f)) {
+	if (!isEqual(actorScale, Utils::GetScale(actor.get()), 0.2f)) {
 		actorScale = Utils::GetScale(actor.get());
 		return false;
 	}

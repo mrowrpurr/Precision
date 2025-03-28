@@ -44,7 +44,8 @@ namespace
 			util::report_and_fail("Failed to find standard logging directory"sv);
 		}
 
-		*path /= fmt::format("{}.log", Plugin::NAME);
+		// *path /= fmt::format(".log");
+		*path /= "Precision.log"sv;
 		auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
 #endif
 
@@ -64,38 +65,40 @@ namespace
 	}
 }
 
-extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
-{
-	a_info->infoVersion = SKSE::PluginInfo::kVersion;
-	a_info->name = Plugin::NAME.data();
-	a_info->version = Plugin::VERSION.pack();
+// extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
+// {
+// 	a_info->infoVersion = SKSE::PluginInfo::kVersion;
+// 	a_info->name = Plugin::NAME.data();
+// 	a_info->version = Plugin::VERSION.pack();
 
-	if (a_skse->IsEditor()) {
-		logger::critical("Loaded in editor, marking as incompatible");
-		return false;
-	}
+// 	if (a_skse->IsEditor()) {
+// 		logger::critical("Loaded in editor, marking as incompatible");
+// 		return false;
+// 	}
 
-	const auto ver = a_skse->RuntimeVersion();
-	if (ver < SKSE::RUNTIME_SSE_1_5_39) {
-		logger::critical(FMT_STRING("Unsupported runtime version {}"), ver.string());
-		return false;
-	}
+// 	const auto ver = a_skse->RuntimeVersion();
+// 	if (ver < SKSE::RUNTIME_SSE_1_5_39) {
+// 		logger::critical(FMT_STRING("Unsupported runtime version {}"), ver.string());
+// 		return false;
+// 	}
 
-	return true;
-}
+// 	return true;
+// }
 
-extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
-	SKSE::PluginVersionData v;
+// extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
+// 	SKSE::PluginVersionData v;
 
-	v.PluginVersion(Plugin::VERSION);
-	v.PluginName(Plugin::NAME);
-	v.AuthorName("Ersh");
-	v.UsesAddressLibrary(true);
-	v.CompatibleVersions({ SKSE::RUNTIME_SSE_LATEST });
-	v.HasNoStructUse(true);
+// 	v.PluginVersion(Plugin::VERSION);
+// 	v.PluginName(Plugin::NAME);
+// 	v.AuthorName("Ersh");
+// 	v.UsesAddressLibrary(true);
+// 	v.CompatibleVersions({ SKSE::RUNTIME_SSE_LATEST });
+// 	v.HasNoStructUse(true);
 
-	return v;
-}();
+// 	return v;
+// }();
+
+#include <SKSEPluginInfo.h>
 
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
@@ -107,7 +110,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	//REL::Module::reset();  // Clib-NG bug workaround
 
 	InitializeLog();
-	logger::info("{} v{}", Plugin::NAME, Plugin::VERSION.string());
+	// logger::info("{} v{}", Plugin::NAME, Plugin::VERSION.string());
 
 	SKSE::Init(a_skse);
 	SKSE::AllocTrampoline(1 << 10);
@@ -128,7 +131,7 @@ extern "C" DLLEXPORT void* SKSEAPI RequestPluginAPI(const PRECISION_API::Interfa
 	// Workaround so the old version of Accuracy doesn't receive the API. Should've designed the API a bit differently. Too late now.
 	REX::W32::HMODULE hModule = nullptr;
 	void* retAddr = _ReturnAddress();
-	GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCSTR)retAddr, (HMODULE*)&hModule);
+	GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCWSTR)retAddr, (HMODULE*)&hModule);
 
 	if (hModule) {
 		SKSE::PluginVersionData* versionData = (SKSE::PluginVersionData*)REX::W32::GetProcAddress(hModule, "SKSEPlugin_Version");

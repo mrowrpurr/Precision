@@ -401,8 +401,6 @@ namespace RE
 	static_assert(offsetof(bhkRigidBodyCinfo, hkCinfo) == 0x30);
 	static_assert(sizeof(bhkRigidBodyCinfo) == 0x110);
 
-
-
 	class hkContactPointMaterial
 	{
 	public:
